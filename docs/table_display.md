@@ -15,6 +15,19 @@ title: Table Display
     overflow-x: auto;
   }
 
+  .scroll-container-top {
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin-bottom: 0;
+    border: 1px solid #ddd;
+    border-bottom: none;
+  }
+
+  .scroll-spacer {
+    width: 100%;
+    height: 1px;
+  }
+
   table {
     border-collapse: collapse;
     width: 100%;
@@ -92,8 +105,12 @@ title: Table Display
   <input type="text" id="filter-value-2" placeholder="Value..." style="padding: 5px; font-size: 14px;">
 </p>
 
+<div class="scroll-container-top" id="scroll-top">
+  <div class="scroll-spacer"></div>
+</div>
+
 <div class="table-wrapper">
-  <div class="table-container">
+  <div class="table-container" id="scroll-bottom">
     <table id="data-table">
   <thead>
     <tr>
@@ -143,11 +160,23 @@ title: Table Display
       this.filterColumn2 = document.getElementById('filter-column-2');
       this.filterValue2 = document.getElementById('filter-value-2');
       
+      // スクロール要素を取得
+      this.scrollTop = document.getElementById('scroll-top');
+      this.scrollBottom = document.getElementById('scroll-bottom');
+      
       // イベントリスナーを登録
       this.filterColumn1.addEventListener('change', () => this.applyFilter());
       this.filterValue1.addEventListener('keyup', () => this.applyFilter());
       this.filterColumn2.addEventListener('change', () => this.applyFilter());
       this.filterValue2.addEventListener('keyup', () => this.applyFilter());
+      
+      // スクロール同期
+      this.scrollTop.addEventListener('scroll', () => {
+        this.scrollBottom.scrollLeft = this.scrollTop.scrollLeft;
+      });
+      this.scrollBottom.addEventListener('scroll', () => {
+        this.scrollTop.scrollLeft = this.scrollBottom.scrollLeft;
+      });
       
       this.applyMerging();
     }
