@@ -4,22 +4,55 @@ title: Table Display
 ---
 
 <style>
+  .table-wrapper {
+    max-height: 600px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    margin-top: 20px;
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
   table {
     border-collapse: collapse;
     width: 100%;
-    margin-top: 20px;
+    min-width: 500px;
   }
+
+  thead {
+    position: sticky;
+    top: 0;
+    background-color: #f2f2f2;
+    z-index: 10;
+  }
+
   th, td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
+    white-space: nowrap;
   }
+
   th {
-    background-color: #f2f2f2;
     font-weight: bold;
   }
+
   tr.hidden {
     display: none !important;
+  }
+
+  @media (max-width: 768px) {
+    table {
+      font-size: 12px;
+    }
+    th, td {
+      padding: 4px;
+    }
+    .table-wrapper {
+      max-height: 400px;
+    }
   }
 </style>
 
@@ -29,42 +62,72 @@ title: Table Display
   <label for="filter-column-1">Column 1:</label>
   <select id="filter-column-1" style="padding: 5px; font-size: 14px; margin-right: 5px;">
     <option value="">-- None --</option>
-    <option value="0">item1</option>
-    <option value="1">item2</option>
-    <option value="2">item3</option>
+    <option value="0">col1</option>
+    <option value="1">col2</option>
+    <option value="2">col3</option>
+    <option value="3">col4</option>
+    <option value="4">col5</option>
+    <option value="5">col6</option>
+    <option value="6">col7</option>
+    <option value="7">col8</option>
+    <option value="8">col9</option>
+    <option value="9">col10</option>
   </select>
   <input type="text" id="filter-value-1" placeholder="Value..." style="padding: 5px; font-size: 14px; margin-right: 20px;">
   
   <label for="filter-column-2">Column 2:</label>
   <select id="filter-column-2" style="padding: 5px; font-size: 14px; margin-right: 5px;">
     <option value="">-- None --</option>
-    <option value="0">item1</option>
-    <option value="1">item2</option>
-    <option value="2">item3</option>
+    <option value="0">col1</option>
+    <option value="1">col2</option>
+    <option value="2">col3</option>
+    <option value="3">col4</option>
+    <option value="4">col5</option>
+    <option value="5">col6</option>
+    <option value="6">col7</option>
+    <option value="7">col8</option>
+    <option value="8">col9</option>
+    <option value="9">col10</option>
   </select>
   <input type="text" id="filter-value-2" placeholder="Value..." style="padding: 5px; font-size: 14px;">
 </p>
 
-<table id="data-table">
+<div class="table-wrapper">
+  <div class="table-container">
+    <table id="data-table">
   <thead>
     <tr>
-      <th>item1</th>
-      <th>item2</th>
-      <th>item3</th>
-      <th>note</th>
+      <th>col1</th>
+      <th>col2</th>
+      <th>col3</th>
+      <th>col4</th>
+      <th>col5</th>
+      <th>col6</th>
+      <th>col7</th>
+      <th>col8</th>
+      <th>col9</th>
+      <th>col10</th>
     </tr>
   </thead>
   <tbody id="table-body">
     {% for row in site.data.table_data %}
-      <tr class="data-row" data-item3="{{ row.item3 }}" data-index="{{ forloop.index0 }}">
-        <td>{{ row.item1 }}</td>
-        <td>{{ row.item2 }}</td>
-        <td>{{ row.item3 }}</td>
-        <td class="note-cell">{{ row.note }}</td>
+      <tr class="data-row" data-index="{{ forloop.index0 }}">
+        <td>{{ row.col1 }}</td>
+        <td>{{ row.col2 }}</td>
+        <td>{{ row.col3 }}</td>
+        <td>{{ row.col4 }}</td>
+        <td>{{ row.col5 }}</td>
+        <td>{{ row.col6 }}</td>
+        <td>{{ row.col7 }}</td>
+        <td>{{ row.col8 }}</td>
+        <td>{{ row.col9 }}</td>
+        <td>{{ row.col10 }}</td>
       </tr>
     {% endfor %}
   </tbody>
 </table>
+  </div>
+</div>
 
 <script>
   // セル結合と行の非表示を管理するクラス
