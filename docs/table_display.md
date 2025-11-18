@@ -4,21 +4,48 @@ title: Table Display
 ---
 
 <style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html, body {
+    height: 100%;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  h1 {
+    padding: 20px 20px 10px 20px;
+    margin: 0;
+  }
+
+  p {
+    padding: 10px 20px;
+    margin: 0;
+  }
+
   .table-wrapper {
-    max-height: 600px;
+    flex: 1;
     overflow-y: auto;
     border: 1px solid #ddd;
-    margin-top: 20px;
+    margin: 0 20px 20px 20px;
+    min-height: 0;
   }
 
   .table-container {
     overflow-x: auto;
+    height: 100%;
   }
 
   .scroll-container-top {
     overflow-x: auto;
     overflow-y: hidden;
-    margin-bottom: 0;
+    margin: 0 20px 0 20px;
     border: 1px solid #ddd;
     border-bottom: none;
   }
@@ -63,7 +90,10 @@ title: Table Display
       padding: 4px;
     }
     .table-wrapper {
-      max-height: 400px;
+      margin: 0 10px 10px 10px;
+    }
+    .scroll-container-top {
+      margin: 0 10px 0 10px;
     }
   }
 </style>
