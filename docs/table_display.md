@@ -26,16 +26,23 @@ title: Table Display
 <h1>Table Data</h1>
 
 <p>
-  <label for="filter-column">Filter column:</label>
-  <select id="filter-column" style="padding: 5px; font-size: 14px; margin-right: 10px;">
-    <option value="all">All columns</option>
+  <label for="filter-column-1">Column 1:</label>
+  <select id="filter-column-1" style="padding: 5px; font-size: 14px; margin-right: 5px;">
+    <option value="">-- None --</option>
     <option value="0">item1</option>
     <option value="1">item2</option>
     <option value="2">item3</option>
   </select>
+  <input type="text" id="filter-value-1" placeholder="Value..." style="padding: 5px; font-size: 14px; margin-right: 20px;">
   
-  <label for="filter">Filter value:</label>
-  <input type="text" id="filter" placeholder="Enter value to filter..." style="padding: 5px; font-size: 14px;">
+  <label for="filter-column-2">Column 2:</label>
+  <select id="filter-column-2" style="padding: 5px; font-size: 14px; margin-right: 5px;">
+    <option value="">-- None --</option>
+    <option value="0">item1</option>
+    <option value="1">item2</option>
+    <option value="2">item3</option>
+  </select>
+  <input type="text" id="filter-value-2" placeholder="Value..." style="padding: 5px; font-size: 14px;">
 </p>
 
 <table id="data-table">
@@ -66,11 +73,19 @@ title: Table Display
       this.table = document.getElementById(tableId);
       this.tbody = document.getElementById('table-body');
       this.rows = Array.from(this.tbody.querySelectorAll('tr.data-row'));
-      this.filterInput = document.getElementById('filter');
-      this.filterColumn = document.getElementById('filter-column');
       
-      this.filterInput.addEventListener('keyup', () => this.applyFilter());
-      this.filterColumn.addEventListener('change', () => this.applyFilter());
+      // フィルタ要素を取得
+      this.filterColumn1 = document.getElementById('filter-column-1');
+      this.filterValue1 = document.getElementById('filter-value-1');
+      this.filterColumn2 = document.getElementById('filter-column-2');
+      this.filterValue2 = document.getElementById('filter-value-2');
+      
+      // イベントリスナーを登録
+      this.filterColumn1.addEventListener('change', () => this.applyFilter());
+      this.filterValue1.addEventListener('keyup', () => this.applyFilter());
+      this.filterColumn2.addEventListener('change', () => this.applyFilter());
+      this.filterValue2.addEventListener('keyup', () => this.applyFilter());
+      
       this.applyMerging();
     }
     
@@ -97,22 +112,35 @@ title: Table Display
     
     // フィルタリング
     applyFilter() {
-      const filterValue = this.filterInput.value.toLowerCase().trim();
-      const filterColumnValue = this.filterColumn.value;
+      const filters = [
+        {
+          column: this.filterColumn1.value,
+          value: this.filterValue1.value.toLowerCase().trim()
+        },
+        {
+          column: this.filterColumn2.value,
+          value: this.filterValue2.value.toLowerCase().trim()
+        }
+      ];
       
       this.rows.forEach(row => {
-        let isMatch = filterValue === '';
+        let isMatch = true;
         
-        if (filterValue !== '') {
-          if (filterColumnValue === 'all') {
-            // すべてのカラム（note以外）をチェック
-            const cells = Array.from(row.querySelectorAll('td')).slice(0, -1); // note セルは除外
-            isMatch = cells.some(cell => cell.textContent.toLowerCase().includes(filterValue));
-          } else {
-            // 指定されたカラムのみチェック
-            const columnIndex = parseInt(filterColumnValue);
-            const cell = row.querySelector(`td:nth-child(${columnIndex + 1})`);
-            isMatch = cell ? cell.textContent.toLowerCase().includes(filterValue) : false;
+        // すべてのフィルタ条件をチェック（AND条件）
+        for (const filter of filters) {
+          // フィルタが設定されていない場合はスキップ
+          if (!filter.column || !filter.value) {
+            continue;
+          }
+          
+          const columnIndex = parseInt(filter.column);
+          const cell = row.querySelector(`td:nth-child(${columnIndex + 1})`);
+          const cellValue = cell ? cell.textContent.toLowerCase() : '';
+          
+          // このフィルタ条件に一致しない場合、行全体が不一致
+          if (!cellValue.includes(filter.value)) {
+            isMatch = false;
+            break;
           }
         }
         
