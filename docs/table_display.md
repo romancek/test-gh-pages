@@ -1,7 +1,6 @@
 ---
 layout: default
 title: Table Display
-filter_item3: foo
 ---
 
 <style>
@@ -26,15 +25,8 @@ filter_item3: foo
 
 <p>
   <label for="filter">Filter by item3:</label>
-  <input type="text" id="filter" placeholder="Enter value to filter..." value="{{ page.filter_item3 }}">
+  <input type="text" id="filter" placeholder="Enter value to filter...">
 </p>
-
-{% assign filtered_data = "" | split: "" %}
-{% for row in site.data.table_data %}
-  {% if row.item3 == page.filter_item3 or page.filter_item3 == "" %}
-    {% assign filtered_data = filtered_data | push: row %}
-  {% endif %}
-{% endfor %}
 
 <table id="data-table">
   <thead>
@@ -46,12 +38,12 @@ filter_item3: foo
     </tr>
   </thead>
   <tbody>
-    {% for i in (0..filtered_data.size | minus: 1) %}
-      {% assign current_row = filtered_data[i] %}
-      {% assign next_row = filtered_data[i | plus: 1] %}
+    {% for i in (0..site.data.table_data.size | minus: 1) %}
+      {% assign current_row = site.data.table_data[i] %}
+      {% assign next_row = site.data.table_data[i | plus: 1] %}
       
-      {% assign current_note = current_row.note | default: "" %}
-      {% assign next_note = next_row.note | default: "" %}
+      {% assign current_note = current_row.note | default: "" | strip %}
+      {% assign next_note = next_row.note | default: "" | strip %}
       
       <!-- セル結合判定: 現在のnoteが非空かつ次のnoteが空なら結合 -->
       {% assign should_merge = false %}
@@ -59,7 +51,7 @@ filter_item3: foo
         {% assign should_merge = true %}
       {% endif %}
       
-      <tr>
+      <tr class="data-row" data-item3="{{ current_row.item3 }}">
         <td>{{ current_row.item1 }}</td>
         <td>{{ current_row.item2 }}</td>
         <td>{{ current_row.item3 }}</td>
@@ -71,7 +63,7 @@ filter_item3: foo
       
       <!-- 次の行がnoteが空で現在がnoteが非空の場合、次の行はnoteセルを出力しない -->
       {% if should_merge %}
-        <tr>
+        <tr class="data-row" data-item3="{{ next_row.item3 }}">
           <td>{{ next_row.item1 }}</td>
           <td>{{ next_row.item2 }}</td>
           <td>{{ next_row.item3 }}</td>
@@ -84,12 +76,13 @@ filter_item3: foo
 
 <script>
   document.getElementById('filter').addEventListener('keyup', function(e) {
-    const filterValue = e.target.value.toLowerCase();
-    const rows = document.querySelectorAll('#data-table tbody tr');
+    const filterValue = e.target.value.toLowerCase().trim();
+    const rows = document.querySelectorAll('#data-table tbody tr.data-row');
     
     rows.forEach(row => {
-      const item3Cell = row.cells[2].textContent.toLowerCase();
-      if (filterValue === '' || item3Cell.includes(filterValue)) {
+      const item3Value = row.getAttribute('data-item3').toLowerCase();
+      
+      if (filterValue === '' || item3Value.includes(filterValue)) {
         row.style.display = '';
       } else {
         row.style.display = 'none';
