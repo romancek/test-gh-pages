@@ -21,11 +21,12 @@ title: Table Display
     margin-bottom: 0;
     border: 1px solid #ddd;
     border-bottom: none;
+    height: 20px;
   }
 
   .scroll-spacer {
     width: 100%;
-    height: 1px;
+    height: 100px;
   }
 
   table {
