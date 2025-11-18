@@ -26,20 +26,21 @@ title: Table Display
   }
 
   h1 {
-    padding: 20px 20px 10px 20px;
+    padding: 20px 0 10px 0;
     margin: 0;
   }
 
   p {
-    padding: 10px 20px;
+    padding: 10px 0;
     margin: 0;
+    overflow-x: auto;
   }
 
   .table-wrapper {
     flex: 1;
     overflow-y: auto;
     border: 1px solid #ddd;
-    margin: 0 20px 20px 20px;
+    margin: 0;
     min-height: 0;
   }
 
@@ -51,7 +52,7 @@ title: Table Display
   .scroll-container-top {
     overflow-x: auto;
     overflow-y: hidden;
-    margin: 0 20px 0 20px;
+    margin: 0;
     border: 1px solid #ddd;
     border-bottom: none;
   }
@@ -94,12 +95,6 @@ title: Table Display
     }
     th, td {
       padding: 4px;
-    }
-    .table-wrapper {
-      margin: 0 10px 10px 10px;
-    }
-    .scroll-container-top {
-      margin: 0 10px 0 10px;
     }
   }
 </style>
