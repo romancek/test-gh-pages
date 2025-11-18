@@ -26,7 +26,15 @@ title: Table Display
 <h1>Table Data</h1>
 
 <p>
-  <label for="filter">Filter by item3:</label>
+  <label for="filter-column">Filter column:</label>
+  <select id="filter-column" style="padding: 5px; font-size: 14px; margin-right: 10px;">
+    <option value="all">All columns</option>
+    <option value="0">item1</option>
+    <option value="1">item2</option>
+    <option value="2">item3</option>
+  </select>
+  
+  <label for="filter">Filter value:</label>
   <input type="text" id="filter" placeholder="Enter value to filter..." style="padding: 5px; font-size: 14px;">
 </p>
 
@@ -59,8 +67,10 @@ title: Table Display
       this.tbody = document.getElementById('table-body');
       this.rows = Array.from(this.tbody.querySelectorAll('tr.data-row'));
       this.filterInput = document.getElementById('filter');
+      this.filterColumn = document.getElementById('filter-column');
       
       this.filterInput.addEventListener('keyup', () => this.applyFilter());
+      this.filterColumn.addEventListener('change', () => this.applyFilter());
       this.applyMerging();
     }
     
@@ -88,16 +98,25 @@ title: Table Display
     // フィルタリング
     applyFilter() {
       const filterValue = this.filterInput.value.toLowerCase().trim();
+      const filterColumnValue = this.filterColumn.value;
       
       this.rows.forEach(row => {
-        const item3Value = row.getAttribute('data-item3').toLowerCase();
-        const isMatch = filterValue === '' || item3Value.includes(filterValue);
+        let isMatch = filterValue === '';
         
-        if (isMatch) {
-          row.classList.remove('hidden');
-        } else {
-          row.classList.add('hidden');
+        if (filterValue !== '') {
+          if (filterColumnValue === 'all') {
+            // すべてのカラム（note以外）をチェック
+            const cells = Array.from(row.querySelectorAll('td')).slice(0, -1); // note セルは除外
+            isMatch = cells.some(cell => cell.textContent.toLowerCase().includes(filterValue));
+          } else {
+            // 指定されたカラムのみチェック
+            const columnIndex = parseInt(filterColumnValue);
+            const cell = row.querySelector(`td:nth-child(${columnIndex + 1})`);
+            isMatch = cell ? cell.textContent.toLowerCase().includes(filterValue) : false;
+          }
         }
+        
+        row.classList.toggle('hidden', !isMatch);
       });
       
       // フィルタ後にセル結合を再適用
@@ -106,9 +125,16 @@ title: Table Display
     
     // フィルタ後のセル結合再適用
     reapplyMerging() {
-      const visibleNoteCells = Array.from(this.tbody.querySelectorAll('td.note-cell:not([rowspan])')).filter(cell => {
-        return cell.parentElement.classList.contains('data-row') && !cell.parentElement.classList.contains('hidden');
+      // 既存の rowspan をリセット
+      const allNoteCells = this.tbody.querySelectorAll('td.note-cell');
+      allNoteCells.forEach(cell => {
+        cell.removeAttribute('rowspan');
+        cell.style.verticalAlign = 'top';
       });
+      
+      // 表示中の行のnoteセルのみを取得
+      const visibleRows = Array.from(this.rows).filter(row => !row.classList.contains('hidden'));
+      const visibleNoteCells = visibleRows.map(row => row.querySelector('td.note-cell'));
       
       visibleNoteCells.forEach((cell, index) => {
         const currentNote = cell.textContent.trim();
