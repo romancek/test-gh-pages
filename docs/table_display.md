@@ -98,6 +98,8 @@ title: Table Display
     }
   }
 </style>
+</head>
+<body>
 
 <h1>Table Data</h1>
 
@@ -319,8 +321,8 @@ title: Table Display
     new TableManager('data-table');
   });
 </script>
-</head>
-<body>
 
+</body>
+</html>
 </body>
 </html>
