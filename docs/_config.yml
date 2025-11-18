@@ -1,0 +1,22 @@
+# Site settings
+title: Table Display Sample
+description: JSONC table display with Jekyll and Liquid
+
+# Build settings
+markdown: kramdown
+theme: minima
+
+# Collections
+collections_dir: .
+
+# Data files
+data_dir: _data
+
+# Exclude from processing
+exclude:
+  - .gitignore
+  - .sass-cache/
+  - .jekyll-cache/
+  - node_modules/
+  - vendor/bundle/
+  - vendor/gems/
