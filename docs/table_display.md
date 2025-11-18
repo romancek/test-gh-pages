@@ -7,6 +7,7 @@ title: Table Display
   table {
     border-collapse: collapse;
     width: 100%;
+    margin-top: 20px;
   }
   th, td {
     border: 1px solid #ddd;
@@ -15,6 +16,10 @@ title: Table Display
   }
   th {
     background-color: #f2f2f2;
+    font-weight: bold;
+  }
+  tr.hidden {
+    display: none !important;
   }
 </style>
 
@@ -22,7 +27,7 @@ title: Table Display
 
 <p>
   <label for="filter">Filter by item3:</label>
-  <input type="text" id="filter" placeholder="Enter value to filter...">
+  <input type="text" id="filter" placeholder="Enter value to filter..." style="padding: 5px; font-size: 14px;">
 </p>
 
 <table id="data-table">
@@ -34,60 +39,92 @@ title: Table Display
       <th>note</th>
     </tr>
   </thead>
-  <tbody>
-    {% assign skip_next = false %}
+  <tbody id="table-body">
     {% for row in site.data.table_data %}
-      {% if skip_next %}
-        {% assign skip_next = false %}
-        {% continue %}
-      {% endif %}
-      
-      {% assign current_note = row.note | default: "" | strip %}
-      {% assign row_index = forloop.index0 %}
-      {% assign next_row = site.data.table_data[row_index | plus: 1] %}
-      {% assign next_note = next_row.note | default: "" | strip %}
-      
-      {% assign should_merge = false %}
-      {% if current_note != "" and next_note == "" %}
-        {% assign should_merge = true %}
-      {% endif %}
-      
-      <tr class="data-row" data-item3="{{ row.item3 }}">
+      <tr class="data-row" data-item3="{{ row.item3 }}" data-index="{{ forloop.index0 }}">
         <td>{{ row.item1 }}</td>
         <td>{{ row.item2 }}</td>
         <td>{{ row.item3 }}</td>
-        {% if should_merge %}
-          <td rowspan="2">{{ current_note }}</td>
-        {% else %}
-          <td>{{ current_note }}</td>
-        {% endif %}
+        <td class="note-cell">{{ row.note }}</td>
       </tr>
-      
-      {% if should_merge %}
-        <tr class="data-row" data-item3="{{ next_row.item3 }}">
-          <td>{{ next_row.item1 }}</td>
-          <td>{{ next_row.item2 }}</td>
-          <td>{{ next_row.item3 }}</td>
-        </tr>
-        {% assign skip_next = true %}
-      {% endif %}
     {% endfor %}
   </tbody>
 </table>
 
 <script>
-  document.getElementById('filter').addEventListener('keyup', function(e) {
-    const filterValue = e.target.value.toLowerCase().trim();
-    const rows = document.querySelectorAll('#data-table tbody tr.data-row');
-    
-    rows.forEach(row => {
-      const item3Value = row.getAttribute('data-item3').toLowerCase();
+  // セル結合と行の非表示を管理するクラス
+  class TableManager {
+    constructor(tableId) {
+      this.table = document.getElementById(tableId);
+      this.tbody = document.getElementById('table-body');
+      this.rows = Array.from(this.tbody.querySelectorAll('tr.data-row'));
+      this.filterInput = document.getElementById('filter');
       
-      if (filterValue === '' || item3Value.includes(filterValue)) {
-        row.style.display = '';
-      } else {
-        row.style.display = 'none';
-      }
-    });
+      this.filterInput.addEventListener('keyup', () => this.applyFilter());
+      this.applyMerging();
+    }
+    
+    // セル結合ロジック
+    applyMerging() {
+      const noteCells = this.tbody.querySelectorAll('td.note-cell');
+      
+      noteCells.forEach((cell, index) => {
+        const currentNote = cell.textContent.trim();
+        const nextCell = noteCells[index + 1];
+        const nextNote = nextCell ? nextCell.textContent.trim() : '';
+        
+        // 現在のnoteが非空かつ次のnoteが空ならrowspan=2
+        if (currentNote !== '' && nextNote === '') {
+          cell.setAttribute('rowspan', '2');
+          cell.style.verticalAlign = 'middle';
+          // 次の行のnoteセルを削除
+          if (nextCell) {
+            nextCell.remove();
+          }
+        }
+      });
+    }
+    
+    // フィルタリング
+    applyFilter() {
+      const filterValue = this.filterInput.value.toLowerCase().trim();
+      
+      this.rows.forEach(row => {
+        const item3Value = row.getAttribute('data-item3').toLowerCase();
+        const isMatch = filterValue === '' || item3Value.includes(filterValue);
+        
+        if (isMatch) {
+          row.classList.remove('hidden');
+        } else {
+          row.classList.add('hidden');
+        }
+      });
+      
+      // フィルタ後にセル結合を再適用
+      this.reapplyMerging();
+    }
+    
+    // フィルタ後のセル結合再適用
+    reapplyMerging() {
+      const visibleNoteCells = Array.from(this.tbody.querySelectorAll('td.note-cell:not([rowspan])')).filter(cell => {
+        return cell.parentElement.classList.contains('data-row') && !cell.parentElement.classList.contains('hidden');
+      });
+      
+      visibleNoteCells.forEach((cell, index) => {
+        const currentNote = cell.textContent.trim();
+        const nextCell = visibleNoteCells[index + 1];
+        const nextNote = nextCell ? nextCell.textContent.trim() : '';
+        
+        if (currentNote !== '' && nextNote === '') {
+          cell.setAttribute('rowspan', '2');
+          cell.style.verticalAlign = 'middle';
+        }
+      });
+    }
+  }
+  
+  // ページ読み込み時に初期化
+  document.addEventListener('DOMContentLoaded', function() {
+    new TableManager('data-table');
   });
 </script>
