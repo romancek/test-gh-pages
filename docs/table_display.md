@@ -21,12 +21,10 @@ title: Table Display
     margin-bottom: 0;
     border: 1px solid #ddd;
     border-bottom: none;
-    height: 20px;
   }
 
   .scroll-spacer {
-    width: 100%;
-    height: 100px;
+    height: 1px;
   }
 
   table {
@@ -164,6 +162,7 @@ title: Table Display
       // スクロール要素を取得
       this.scrollTop = document.getElementById('scroll-top');
       this.scrollBottom = document.getElementById('scroll-bottom');
+      this.scrollSpacer = this.scrollTop.querySelector('.scroll-spacer');
       
       // イベントリスナーを登録
       this.filterColumn1.addEventListener('change', () => this.applyFilter());
@@ -179,7 +178,21 @@ title: Table Display
         this.scrollTop.scrollLeft = this.scrollBottom.scrollLeft;
       });
       
+      // 上部スクロールバーの幅を設定
+      setTimeout(() => this.setSyncScrollWidth(), 100);
+      window.addEventListener('resize', () => this.setSyncScrollWidth());
+      
       this.applyMerging();
+    }
+    
+    // 上部スクロール領域の幅を動的に設定
+    setSyncScrollWidth() {
+      const scrollWidth = this.scrollBottom.scrollWidth;
+      const clientWidth = this.scrollBottom.clientWidth;
+      
+      if (scrollWidth > clientWidth) {
+        this.scrollSpacer.style.width = scrollWidth + 'px';
+      }
     }
     
     // セル結合ロジック
