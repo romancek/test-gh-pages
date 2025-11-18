@@ -16,9 +16,6 @@ title: Table Display
   th {
     background-color: #f2f2f2;
   }
-  .note-cell-merged {
-    vertical-align: top;
-  }
 </style>
 
 <h1>Table Data</h1>
@@ -38,37 +35,41 @@ title: Table Display
     </tr>
   </thead>
   <tbody>
-    {% for i in (0..site.data.table_data.size | minus: 1) %}
-      {% assign current_row = site.data.table_data[i] %}
-      {% assign next_row = site.data.table_data[i | plus: 1] %}
+    {% assign skip_next = false %}
+    {% for row in site.data.table_data %}
+      {% if skip_next %}
+        {% assign skip_next = false %}
+        {% continue %}
+      {% endif %}
       
-      {% assign current_note = current_row.note | default: "" | strip %}
+      {% assign current_note = row.note | default: "" | strip %}
+      {% assign row_index = forloop.index0 %}
+      {% assign next_row = site.data.table_data[row_index | plus: 1] %}
       {% assign next_note = next_row.note | default: "" | strip %}
       
-      <!-- セル結合判定: 現在のnoteが非空かつ次のnoteが空なら結合 -->
       {% assign should_merge = false %}
       {% if current_note != "" and next_note == "" %}
         {% assign should_merge = true %}
       {% endif %}
       
-      <tr class="data-row" data-item3="{{ current_row.item3 }}">
-        <td>{{ current_row.item1 }}</td>
-        <td>{{ current_row.item2 }}</td>
-        <td>{{ current_row.item3 }}</td>
-        <td class="{% if should_merge %}note-cell-merged{% endif %}" 
-            {% if should_merge %}rowspan="2"{% endif %}>
-          {{ current_note }}
-        </td>
+      <tr class="data-row" data-item3="{{ row.item3 }}">
+        <td>{{ row.item1 }}</td>
+        <td>{{ row.item2 }}</td>
+        <td>{{ row.item3 }}</td>
+        {% if should_merge %}
+          <td rowspan="2">{{ current_note }}</td>
+        {% else %}
+          <td>{{ current_note }}</td>
+        {% endif %}
       </tr>
       
-      <!-- 次の行がnoteが空で現在がnoteが非空の場合、次の行はnoteセルを出力しない -->
       {% if should_merge %}
         <tr class="data-row" data-item3="{{ next_row.item3 }}">
           <td>{{ next_row.item1 }}</td>
           <td>{{ next_row.item2 }}</td>
           <td>{{ next_row.item3 }}</td>
         </tr>
-        {% assign i = i | plus: 1 %}
+        {% assign skip_next = true %}
       {% endif %}
     {% endfor %}
   </tbody>
