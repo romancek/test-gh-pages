@@ -16,6 +16,7 @@ title: Home
 ## Pages
 
 - [Table Display]({{ site.baseurl }}/table_display.html) - テーブルデータの表示ページ
+- [Tree Display]({{ site.baseurl }}/table_tree_display.html) - ツリー構造のデータ表示ページ
 
 ## 使用方法
 
