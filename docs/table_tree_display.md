@@ -8,6 +8,29 @@ layout: table
 <div id="tree-container"></div>
 
 <style>
+  /* Override layout styles */
+  html, body {
+    height: auto !important;
+  }
+  
+  body {
+    display: block !important;
+  }
+
+  .table-wrapper {
+    flex: initial !important;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: auto !important;
+    width: auto !important;
+  }
+
+  .table-container {
+    overflow: visible !important;
+    width: auto !important;
+    height: auto !important;
+  }
+
   #tree-container {
     padding: 20px;
     background-color: white;
