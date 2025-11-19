@@ -1,6 +1,6 @@
 ---
 title: Tree Display
-layout: table
+layout: default
 ---
 
 <h1>Tree Structure Data (col1 & col2)</h1>
@@ -8,29 +8,6 @@ layout: table
 <div id="tree-container"></div>
 
 <style>
-  /* Override layout styles */
-  html, body {
-    height: auto !important;
-  }
-  
-  body {
-    display: block !important;
-  }
-
-  .table-wrapper {
-    flex: initial !important;
-    overflow: visible !important;
-    height: auto !important;
-    min-height: auto !important;
-    width: auto !important;
-  }
-
-  .table-container {
-    overflow: visible !important;
-    width: auto !important;
-    height: auto !important;
-  }
-
   #tree-container {
     padding: 20px;
     background-color: white;
@@ -346,6 +323,13 @@ layout: table
   // Initialize tree on page load
   document.addEventListener('DOMContentLoaded', function() {
     const treeData = {{ site.data.tree_data | jsonify }};
-    new TreeRenderer('tree-container', treeData);
+    console.log('Tree data loaded:', treeData);
+    console.log('Tree data length:', treeData.length);
+    if (treeData && treeData.length > 0) {
+      new TreeRenderer('tree-container', treeData);
+    } else {
+      console.error('No tree data available!');
+      document.getElementById('tree-container').innerHTML = '<p style="color: red;">Error: No data loaded</p>';
+    }
   });
 </script>
