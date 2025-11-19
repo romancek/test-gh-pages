@@ -129,7 +129,7 @@ layout: default
       let level1Index = 0;
       col1Groups.forEach((col2Map, col1Value) => {
         const col1Node = {
-          id: `col1_${col1Index}`,
+          id: `col1_${level1Index}`,
           name: col1Value,
           level: 1,
           children: []
@@ -138,7 +138,7 @@ layout: default
         let level2Index = 0;
         col2Map.forEach((items, col2Value) => {
           const col2Node = {
-            id: `col1_${col1Index}_col2_${level2Index}`,
+            id: `col1_${level1Index}_col2_${level2Index}`,
             name: col2Value,
             level: 2,
             itemCount: items.length,
