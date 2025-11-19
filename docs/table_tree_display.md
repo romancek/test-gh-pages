@@ -154,7 +154,9 @@ layout: tree
         const row = document.createElement('tr');
         ['col3', 'col4', 'col5', 'col6', 'col7', 'col8', 'col9', 'col10'].forEach(col => {
           const td = document.createElement('td');
-          td.textContent = item[col];
+          const cellValue = item[col] || '';
+          const htmlContent = cellValue.toString().replace(/\n/g, '<br>');
+          td.innerHTML = htmlContent;
           row.appendChild(td);
         });
         tbody.appendChild(row);
