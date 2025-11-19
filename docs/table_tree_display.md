@@ -19,7 +19,7 @@ layout: tree
       const col1Groups = new Map();
       this.rawData.forEach(item => {
         const col1 = item.col1;
-        const col2 = item.col2;
+        const col2 = item.col2 || '';
         if (!col1Groups.has(col1)) {
           col1Groups.set(col1, new Map());
         }
@@ -39,15 +39,20 @@ layout: tree
         };
         let level2Index = 0;
         col2Map.forEach((items, col2Value) => {
-          const col2Node = {
-            id: `col1_${level1Index}_col2_${level2Index}`,
-            name: col2Value,
-            level: 2,
-            itemCount: items.length,
-            items: items
-          };
-          col1Node.children.push(col2Node);
-          level2Index++;
+          if (col2Value === '') {
+            col1Node.items = items;
+            col1Node.hasDirectItems = true;
+          } else {
+            const col2Node = {
+              id: `col1_${level1Index}_col2_${level2Index}`,
+              name: col2Value,
+              level: 2,
+              itemCount: items.length,
+              items: items
+            };
+            col1Node.children.push(col2Node);
+            level2Index++;
+          }
         });
         this.treeData.push(col1Node);
         level1Index++;
@@ -65,7 +70,7 @@ layout: tree
       nodeEl.dataset.id = node.id;
       const contentEl = document.createElement('div');
       contentEl.className = `tree-node-content level${node.level}`;
-      const hasChildren = node.children && node.children.length > 0;
+      const hasChildren = (node.children && node.children.length > 0) || node.hasDirectItems;
       const toggleEl = document.createElement('span');
       toggleEl.className = 'tree-toggle';
       if (hasChildren) {
@@ -78,7 +83,12 @@ layout: tree
       nameEl.className = 'tree-node-name';
       nameEl.textContent = node.name;
       contentEl.appendChild(nameEl);
-      if (node.level === 2 && node.itemCount) {
+      if (node.level === 1 && node.hasDirectItems) {
+        const countEl = document.createElement('span');
+        countEl.className = 'tree-item-count';
+        countEl.textContent = `(${node.items.length} items)`;
+        contentEl.appendChild(countEl);
+      } else if (node.level === 2 && node.itemCount) {
         const countEl = document.createElement('span');
         countEl.className = 'tree-item-count';
         countEl.textContent = `(${node.itemCount} items)`;
@@ -92,13 +102,14 @@ layout: tree
       });
       nodeEl.appendChild(contentEl);
       if (hasChildren) {
-        node.children.forEach(child => {
-          if (child.level === 2) {
+        if (node.hasDirectItems) {
+          childrenEl.appendChild(this.renderItemsTable(node.items));
+        }
+        if (node.children && node.children.length > 0) {
+          node.children.forEach(child => {
             childrenEl.appendChild(this.renderLevel2Node(child));
-          } else {
-            childrenEl.appendChild(this.renderNode(child));
-          }
-        });
+          });
+        }
       }
       nodeEl.appendChild(childrenEl);
       return nodeEl;
@@ -121,6 +132,11 @@ layout: tree
       countEl.textContent = `(${node.itemCount} items)`;
       contentEl.appendChild(countEl);
       nodeEl.appendChild(contentEl);
+      const tableEl = this.renderItemsTable(node.items);
+      nodeEl.appendChild(tableEl);
+      return nodeEl;
+    }
+    renderItemsTable(items) {
       const tableEl = document.createElement('div');
       tableEl.className = 'tree-item-table-wrapper';
       const table = document.createElement('table');
@@ -134,7 +150,7 @@ layout: tree
       thead.appendChild(headerRow);
       table.appendChild(thead);
       const tbody = document.createElement('tbody');
-      node.items.forEach((item, idx) => {
+      items.forEach((item, idx) => {
         const row = document.createElement('tr');
         ['col3', 'col4', 'col5', 'col6', 'col7', 'col8', 'col9', 'col10'].forEach(col => {
           const td = document.createElement('td');
@@ -145,8 +161,7 @@ layout: tree
       });
       table.appendChild(tbody);
       tableEl.appendChild(table);
-      nodeEl.appendChild(tableEl);
-      return nodeEl;
+      return tableEl;
     }
     toggleNode(nodeId, toggleEl, childrenEl) {
       if (this.expandedNodes.has(nodeId)) {
