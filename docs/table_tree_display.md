@@ -32,7 +32,7 @@ layout: tree
       let level1Index = 0;
       col1Groups.forEach((col2Map, col1Value) => {
         const col1Node = {
-          id: col1_${level1Index},
+          id: `col1_${level1Index}`,
           name: col1Value,
           level: 1,
           children: []
@@ -40,7 +40,7 @@ layout: tree
         let level2Index = 0;
         col2Map.forEach((items, col2Value) => {
           const col2Node = {
-            id: col1_${level1Index}_col2_${level2Index},
+            id: `col1_${level1Index}_col2_${level2Index}`,
             name: col2Value,
             level: 2,
             itemCount: items.length,
@@ -64,7 +64,7 @@ layout: tree
       nodeEl.className = 'tree-node';
       nodeEl.dataset.id = node.id;
       const contentEl = document.createElement('div');
-      contentEl.className = 	ree-node-content level${node.level};
+      contentEl.className = `tree-node-content level${node.level}`;
       const hasChildren = node.children && node.children.length > 0;
       const toggleEl = document.createElement('span');
       toggleEl.className = 'tree-toggle';
@@ -81,7 +81,7 @@ layout: tree
       if (node.level === 2 && node.itemCount) {
         const countEl = document.createElement('span');
         countEl.className = 'tree-item-count';
-        countEl.textContent = (${node.itemCount} items);
+        countEl.textContent = `(${node.itemCount} items)`;
         contentEl.appendChild(countEl);
       }
       const childrenEl = document.createElement('div');
@@ -118,7 +118,7 @@ layout: tree
       contentEl.appendChild(nameEl);
       const countEl = document.createElement('span');
       countEl.className = 'tree-item-count';
-      countEl.textContent = (${node.itemCount} items);
+      countEl.textContent = `(${node.itemCount} items)`;
       contentEl.appendChild(countEl);
       nodeEl.appendChild(contentEl);
       const tableEl = document.createElement('div');
